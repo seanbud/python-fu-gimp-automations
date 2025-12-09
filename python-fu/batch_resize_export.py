@@ -23,7 +23,6 @@ License: MIT
 
 from gimpfu import *
 import os
-import sys
 
 def batch_resize_export(
     input_dir,
@@ -116,6 +115,7 @@ def batch_resize_export(
         progress = float(idx) / total_files
         gimp.progress_update(progress)
         
+        image = None
         try:
             # Load the image
             image = pdb.gimp_file_load(input_path, input_path)
@@ -232,7 +232,7 @@ def batch_resize_export(
             
             # Try to clean up if image was loaded
             try:
-                if 'image' in locals():
+                if image is not None:
                     pdb.gimp_image_delete(image)
             except:
                 pass
@@ -270,7 +270,7 @@ register(
     "GIMP Python-Fu Automation",
     "MIT License",
     "2024",
-    "<Image>/Filters/Batch Process/Batch Resize and Export...",
+    "<Toolbox>/Filters/Batch Process/Batch Resize and Export...",
     "*",
     [
         (PF_DIRNAME, "input_dir", "Input Directory:", ""),
