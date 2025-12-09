@@ -4,10 +4,15 @@ Automate common GIMP workflows for sprite and image processing using Python-fu s
 
 ## Overview
 
-**my-gimp-automation** is a collection of Python-fu scripts to automate repetitive GIMP tasks, especially for sprite and image manipulation. The scripts streamline processes such as cropping, thresholding, blurring, inverting, batch exporting layers, and applying watermarks or overlays to images, simplifying the creation of "shadow sprite" assets and other image processing workflows.
+**my-gimp-automation** is a collection of Python-fu scripts to automate repetitive GIMP tasks, especially for sprite and image manipulation. The scripts streamline processes such as background removal, cropping, thresholding, blurring, inverting, and batch exporting layers, simplifying the creation of assets with transparent backgrounds, "shadow sprite" assets, and similar workflows.
 
 ## Features
 
+- **Background Removal:** Automatically remove backgrounds from images using fuzzy selection or edge detection methods.
+  - Two removal methods: Fuzzy Select (color-based) and Edge Detection (edge-based)
+  - Adjustable parameters for fine-tuned control
+  - Preview mode to verify selection before removing
+  - Batch processing support for multiple images
 - **Crop and Export:** Automatically crops images to a centered square region and exports processed layers.
 - **Layer Threshold and Blur:** Applies a threshold (making the layer black) and iterative blur to each layer, then exports the results as shadow images.
 - **Invert Layers:** Batch inverts all layers in the current image.
@@ -19,6 +24,7 @@ Automate common GIMP workflows for sprite and image processing using Python-fu s
 ## Scripts
 
 Located in `python-fu/`:
+- `background_removal.py`: Automatically removes backgrounds from images using fuzzy select or edge detection. Includes batch processing for multiple images.
 - `crop-threshold-blur-export.py`: Crops the image, applies threshold and blur to each layer, and saves results as `_shadow.png` files in `shadow_sprites/`.
 - `export_shadow_sprites.py`: Functions for inverting all layers, exporting all layers, or exporting a specific layer by index.
 - `watermark_overlay.py`: Apply watermarks or overlay graphics to images with full customization options for positioning, scaling, opacity, and batch processing.
@@ -62,64 +68,50 @@ After copying the scripts, restart GIMP to load the new plug-ins.
 
 The watermark script provides two main functions accessible from GIMP's menu system:
 
-#### Apply Watermark to Current Image
+#### Background Removal
 
-Located in **Filters → Watermark → Apply Watermark...**
+To remove backgrounds from images:
 
-1. Open an image in GIMP
-2. Go to **Filters → Watermark → Apply Watermark...**
-3. Configure the settings:
-   - **Watermark Image:** Select your watermark/overlay image file (PNG with transparency recommended)
-   - **Position:** Choose placement (Top Left, Top Right, Bottom Left, Bottom Right, Center, or Tiled)
-   - **Scale (%):** Adjust watermark size (1-200%)
-   - **Opacity (%):** Set watermark transparency (0-100%)
-   - **X/Y Offset:** Fine-tune position with pixel offsets
-4. Click **OK** to apply the watermark
+**Single Image - Fuzzy Select Method (Best for solid backgrounds):**
+1. Open your image in GIMP
+2. Go to **Filters > Background Removal > Fuzzy Select...**
+3. Adjust parameters:
+   - **Selection X/Y Position (%)**: Sample point for background color (default: top-left at 5%, 5%)
+   - **Selection Tolerance**: How many similar colors to select (0-255, default: 15)
+   - **Edge Feathering**: Smoothing for edges (0-50 pixels, default: 2)
+   - **Preview Only**: Check to preview selection before removing
+4. Click OK to apply
 
-**Features:**
-- **Corners/Center positioning:** Precisely place watermarks in standard positions
-- **Tiled mode:** Repeat watermark across entire image for security/branding
-- **Scale control:** Resize watermark from 1% to 200% of original size
-- **Opacity control:** From fully transparent (0%) to fully opaque (100%)
-- **Pixel-perfect positioning:** Fine-tune with X/Y offset controls
+**Single Image - Edge Detection Method (Best for complex backgrounds):**
+1. Open your image in GIMP
+2. Go to **Filters > Background Removal > Edge Detection...**
+3. Adjust parameters:
+   - **Edge Detection Sensitivity**: Detection sensitivity (1.0-10.0, default: 2.0)
+   - **Edge Threshold**: Minimum edge strength (0-255, default: 30)
+   - **Grow/Shrink Selection**: Expand/contract selection (pixels, default: 2)
+   - **Preview Only**: Check to preview selection before removing
+4. Click OK to apply
 
-#### Batch Process Multiple Images
+**Batch Processing Multiple Images:**
+1. Open GIMP (any image or create new)
+2. Go to **Filters > Background Removal > Batch Process...**
+3. Select input directory with images
+4. Select output directory for processed images
+5. Choose removal method (Fuzzy Select or Edge Detection)
+6. Adjust method-specific parameters
+7. Click OK to process all images
 
-Located in **Filters → Watermark → Batch Process...**
+Processed images will be saved as PNG files with "_no_bg" suffix, preserving transparency.
 
-1. Open GIMP (no need to open an image first)
-2. Go to **Filters → Watermark → Batch Process...**
-3. Configure the settings:
-   - **Watermark Image:** Select your watermark file
-   - **Input Folder:** Select folder containing images to watermark
-   - **Output Folder:** Select where to save watermarked images
-   - **Position, Scale, Opacity, Offsets:** Same as single image mode
-   - **Output Filename Prefix:** Optional prefix for output files
-   - **Output Filename Suffix:** Suffix added before extension (default: "_watermarked")
-4. Click **OK** to process all images
+For detailed examples and troubleshooting, see the [examples/README.md](examples/README.md) file.
 
-**Supported formats:** PNG, JPG, JPEG, BMP, GIF, TIF, TIFF
+#### Shadow Sprites
 
-**Output:** Watermarked images are saved to the output folder with updated filenames. Original files remain untouched.
-
-### Shadow Sprites Scripts
-
-#### crop-threshold-blur-export.py
-
-1. Open an image with multiple layers in GIMP
-2. Run the script from the Python-fu console
-3. The script will:
-   - Crop the image to a centered square (60% of original width)
-   - Convert each layer to black (threshold)
-   - Apply blur 15 times to create shadow effect
-   - Export each layer as `<layername>_shadow.png` in `shadow_sprites/` subfolder
-
-#### export_shadow_sprites.py
-
-Run from the Python-fu console:
-- `InvertAll()` - Inverts all layers in the current image
-- `ExportAll()` - Exports all layers to `shadow_sprites/` subfolder
-- `ExportLayer(i)` - Exports a specific layer by index
+To batch export shadow sprites:
+- Run `crop-threshold-blur-export.py` to process and export cropped, thresholded, blurred versions of each layer.
+- Alternatively, use `export_shadow_sprites.py`:
+  - Run `InvertAll()` to invert all layers.
+  - Run `ExportAll()` to export all layers.
 
 Exported files will be found in a `shadow_sprites` subfolder next to your original image.
 
