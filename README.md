@@ -1,47 +1,68 @@
-# my-gimp-automation
+# python-fu-gimp-automations
 
-Automate common GIMP workflows for sprite and image processing using Python-fu scripts.
+> gamedev automation scripts for GIMP
 
-## Overview
+## Installation
 
-**my-gimp-automation** is a collection of Python-fu scripts to automate repetitive GIMP tasks, especially for sprite and image manipulation. The scripts streamline processes such as cropping, thresholding, blurring, inverting, and batch exporting layers, simplifying the creation of "shadow sprite" assets and similar workflows.
+Copy scripts to your GIMP plug-ins folder:
+```
+Windows: C:\Users\[USER]\AppData\Roaming\GIMP\2.10\plug-ins\
+Linux:   ~/.config/GIMP/2.10/plug-ins/
+macOS:   ~/Library/Application Support/GIMP/2.10/plug-ins/
+```
 
-## Features
+Restart GIMP. Tools appear under `Filters → Game Dev`
 
-- **Crop and Export:** Automatically crops images to a centered square region and exports processed layers.
-- **Layer Threshold and Blur:** Applies a threshold (making the layer black) and iterative blur to each layer, then exports the results as shadow images.
-- **Invert Layers:** Batch inverts all layers in the current image.
-- **Batch Export:** Saves all layers or selected layers to a dedicated `shadow_sprites` subfolder.
-- **Automatic Output Directory Creation:** Output directories for exported layers are created automatically if they don’t exist.
+**Requirements:** GIMP 2.8+ with Python-Fu
 
-## Scripts
+---
 
-Located in `python-fu/`:
-- `crop-threshold-blur-export.py`: Crops the image, applies threshold and blur to each layer, and saves results as `_shadow.png` files in `shadow_sprites/`.
-- `export_shadow_sprites.py`: Functions for inverting all layers, exporting all layers, or exporting a specific layer by index.
+## Tools
 
-## Usage
+### tileset_slicer.py
+Slice tileset grids into individual sprite files.
+- **Menu:** Filters → Game Dev → Slice Tileset
+- **Config:** tile width/height, margin, spacing
+- **Output:** `tile_0000.png`, `tile_0001.png`, ...
 
-1. **Install GIMP with Python support** (`gimpfu`).
-2. Copy the scripts from the `python-fu` directory into your GIMP plug-ins folder.
-3. Open your image in GIMP and ensure your layers are named for intended processing.
-4. Run the script(s) from the GIMP Python-fu console or assign them to menu actions as needed.
+### normal_map_generator.py
+Generate normal maps from 2D sprites for game engines.
+- **Menu:** Filters → Game Dev → Generate Normal Map (single) or Batch Normal Maps
+- **Config:** strength multiplier, Y-axis inversion
+- **Output:** `[name]_normal.png`
+- **Supports:** Unity, Godot, Unreal Engine
 
-### Example
+### palette_quantizer.py
+Enforce color palette consistency across sprites.
+- **Menu:** Filters → Game Dev → Quantize to Palette (single) or Batch Quantize Palette
+- **Config:** palette name (must exist in GIMP), dithering method
+- **Output:** `[name]_quantized.png`
+- **Note:** Create or import palettes via Windows → Dockable Dialogs → Palettes
 
-To batch export shadow sprites:
-- Run `crop-threshold-blur-export.py` to process and export cropped, thresholded, blurred versions of each layer.
-- Alternatively, use `export_shadow_sprites.py`:
-  - Run `InvertAll()` to invert all layers.
-  - Run `ExportAll()` to export all layers.
+### crop-threshold-blur-export.py
+Crop, threshold, and blur layers to generate shadow sprites.
+- **Usage:** Run as Python script in GIMP console
+- **Output:** `shadow_sprites/[name]_shadow.png`
 
-Exported files will be found in a `shadow_sprites` subfolder next to your original image.
+### export_shadow_sprites.py
+Batch export layers with optional color inversion.
+- **Usage:** Run `InvertAll()` or `ExportAll()` in GIMP console
+- **Output:** `shadow_sprites/[layer_name]`
 
-## Requirements
+---
 
-- GIMP with Python-fu enabled.
-- Python standard library (os module).
+## Project Structure
+```
+python-fu/
+├── tileset_slicer.py
+├── normal_map_generator.py
+├── palette_quantizer.py
+├── crop-threshold-blur-export.py
+└── export_shadow_sprites.py
+```
 
-## Contributing
+---
 
-Pull requests and suggestions are welcome!
+**License:** MIT  
+**Author:** seanbud  
+**Repository:** [github.com/seanbud/python-fu-gimp-automations](https://github.com/seanbud/python-fu-gimp-automations)
